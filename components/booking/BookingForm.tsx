@@ -106,23 +106,55 @@ export default function BookingForm({ defaults }: { defaults?: Partial<FormData>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="text-center py-16"
+        className="text-center py-12"
       >
-        <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-          <CheckCircle className="w-10 h-10 text-emerald-400" />
-        </div>
-        <h2 className="text-2xl font-heading font-bold text-white mb-3">Booking Request Sent!</h2>
-        <p className="text-gray-400 max-w-md mx-auto mb-6">
-          We&apos;ll confirm your booking within 1 hour. Check your email for a confirmation.
-          Questions? Call us at{" "}
-          <a href={COMPANY.phoneHref} className="text-emerald-400 hover:underline">{COMPANY.phone}</a>.
-        </p>
-        <button
-          onClick={() => { setSubmitted(false); setStep(0); }}
-          className="btn-outline-emerald"
+        {/* Animated checkmark */}
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 200, damping: 14, delay: 0.1 }}
+          className="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-emerald-500/40"
         >
-          Book Another Move
-        </button>
+          <CheckCircle className="w-12 h-12 text-emerald-400" />
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-4 py-1.5 mb-4">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-emerald-400 text-sm font-medium">Booking Submitted Successfully</span>
+          </div>
+
+          <h2 className="text-3xl font-heading font-bold text-white mb-3">
+            You&apos;re All Set!
+          </h2>
+          <p className="text-gray-400 max-w-md mx-auto mb-2">
+            Your booking request has been received. We&apos;ll confirm and send a price estimate to your email within <strong className="text-white">1 hour</strong>.
+          </p>
+          <p className="text-gray-500 text-sm max-w-sm mx-auto mb-8">
+            Questions? Call us anytime at{" "}
+            <a href={COMPANY.phoneHref} className="text-emerald-400 hover:underline font-medium">{COMPANY.phone}</a>
+          </p>
+
+          <div className="grid sm:grid-cols-3 gap-3 max-w-lg mx-auto mb-8 text-sm">
+            {[
+              { step: "1", text: "Request received" },
+              { step: "2", text: "We review & confirm" },
+              { step: "3", text: "Move day!" },
+            ].map(({ step, text }) => (
+              <div key={step} className="bg-white/5 border border-white/10 rounded-xl py-3 px-4">
+                <div className="w-6 h-6 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-xs font-bold mx-auto mb-1.5">{step}</div>
+                <p className="text-gray-400 text-xs">{text}</p>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => { setSubmitted(false); setStep(0); }}
+            className="btn-outline-emerald"
+          >
+            Book Another Move
+          </button>
+        </motion.div>
       </motion.div>
     );
   }
