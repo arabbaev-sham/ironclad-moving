@@ -52,10 +52,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               foundingDate: COMPANY.since,
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "4317 8th Avenue NE",
-                addressLocality: "Seattle",
+                streetAddress: "2200 W Meeker St",
+                addressLocality: "Kent",
                 addressRegion: "WA",
-                postalCode: "98105",
+                postalCode: "98032",
                 addressCountry: "US",
               },
               url: "https://ironclad-moving.vercel.app",

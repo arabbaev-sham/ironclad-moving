@@ -29,15 +29,15 @@ export async function POST(req: NextRequest) {
       resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL!,
         to: email,
-        subject: "We received your message — Seattle Prime Movers",
+        subject: "We received your message — IronClad Movers",
         html: `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #059669, #10b981); padding: 24px; border-radius: 12px; text-align: center; color: white;">
               <h1 style="margin: 0;">Message Received!</h1>
             </div>
-            <p>Hi ${name}, thanks for reaching out to Seattle Prime Movers.</p>
-            <p>We'll respond within 1 business hour. For urgent moves, call us at <strong>206-609-5878</strong>.</p>
-            <p style="color: #6b7280; font-size: 14px;">Seattle Prime Movers · 4317 8th Avenue NE, Seattle, WA</p>
+            <p>Hi ${name}, thanks for reaching out to IronClad Movers.</p>
+            <p>We'll respond within 1 business hour. For urgent moves, call us at <strong>+1 206-608-4987</strong>.</p>
+            <p style="color: #6b7280; font-size: 14px;">IronClad Movers · 2200 W Meeker St, Kent, WA</p>
           </div>
         `,
       }),

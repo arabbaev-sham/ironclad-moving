@@ -79,7 +79,7 @@ export default function ContactPage() {
               <iframe
                 src={`https://www.google.com/maps/embed/v1/place?key=${
                   process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""
-                }&q=4317+8th+Avenue+NE+Seattle+WA&zoom=14`}
+                }&q=2200+W+Meeker+St+Kent+WA&zoom=14`}
                 width="100%"
                 height="100%"
                 style={{ border: 0, filter: "invert(90%) hue-rotate(180deg)" }}

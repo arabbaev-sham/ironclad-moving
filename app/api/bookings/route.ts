@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
               <p style="margin:4px 0;color:#8899b8;"><strong style="color:#fff;">To:</strong> ${booking.destination_address}</p>
             </div>
             <p style="color:#8899b8;">Questions? Call us at <a href="tel:12066084987" style="color:#d4a843;">+1 206-608-4987</a></p>
-            <p style="color:#555;font-size:13px;margin-top:24px;">IronClad Movers · 4317 8th Avenue NE, Seattle, WA</p>
+            <p style="color:#555;font-size:13px;margin-top:24px;">IronClad Movers · 2200 W Meeker St, Kent, WA</p>
           </div>
         `,
       }),
