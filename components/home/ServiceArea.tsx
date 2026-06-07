@@ -86,7 +86,7 @@ export default function ServiceArea() {
             </motion.div>
           </div>
 
-          {/* Right: Map */}
+          {/* Right: City list */}
           <motion.div
             initial={{ opacity: 0, x: 24 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -94,25 +94,32 @@ export default function ServiceArea() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="relative"
           >
-            <div className="glass rounded-2xl overflow-hidden shadow-glass aspect-[4/3] relative border border-gold-500/10">
-              <iframe
-                src={`https://www.google.com/maps/embed/v1/place?key=${
-                  process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""
-                }&q=Seattle,WA&zoom=8`}
-                width="100%"
-                height="100%"
-                style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) saturate(1.2)" }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="IronClad Movers service area map"
-                className="absolute inset-0 w-full h-full"
-              />
-            </div>
-            {/* Floating badge */}
-            <div className="absolute -bottom-4 -right-4 glass-gold rounded-2xl px-4 py-3 shadow-gold-sm border border-gold-500/20">
-              <div className="font-heading font-bold text-gold-400 text-lg">150+</div>
-              <div className="text-white text-xs font-display">Miles Covered</div>
+            <div className="glass rounded-2xl p-6 shadow-glass border border-gold-500/10">
+              <div className="flex items-center justify-between mb-5">
+                <span className="text-white font-display font-semibold text-sm uppercase tracking-wider">Cities We Serve</span>
+                <div className="glass-gold rounded-xl px-3 py-1.5 border border-gold-500/20">
+                  <span className="font-heading font-bold text-gold-400 text-base">150+</span>
+                  <span className="text-white text-xs ml-1">Miles Covered</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {[
+                  "Seattle", "Kent", "Bellevue", "Tacoma", "Renton",
+                  "Everett", "Redmond", "Kirkland", "Olympia", "Auburn",
+                  "Federal Way", "Bothell", "Lynnwood", "Shoreline", "Burien",
+                  "Puyallup", "Lakewood", "Bellingham", "Bremerton", "Spokane",
+                  "Issaquah", "Sammamish", "Covington", "Maple Valley", "SeaTac",
+                  "Tukwila", "Des Moines", "Marysville", "Edmonds", "Mountlake Terrace",
+                ].map((city) => (
+                  <div key={city} className="flex items-center gap-2 py-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-gold-400 shrink-0" />
+                    <span className="text-xs text-text-muted">{city}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-gray-500 mt-4 border-t border-white/5 pt-4">
+                + many more cities across Washington State
+              </p>
             </div>
           </motion.div>
         </div>
