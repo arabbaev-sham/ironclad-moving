@@ -28,23 +28,6 @@ export default function ServiceAreasPage() {
           </p>
         </div>
 
-        {/* Map */}
-        <div className="glass rounded-2xl overflow-hidden mb-12 h-72 md:h-96 relative">
-          <iframe
-            src={`https://www.google.com/maps/embed/v1/place?key=${
-              process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""
-            }&q=Seattle,WA&zoom=7`}
-            width="100%"
-            height="100%"
-            style={{ border: 0, filter: "invert(90%) hue-rotate(180deg)" }}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Seattle Prime Movers service area map"
-            className="absolute inset-0"
-          />
-        </div>
-
         {/* City grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12">
           {SERVICE_CITIES.map((city) => (
