@@ -8,6 +8,7 @@ import Reviews from "@/components/home/Reviews";
 import Gallery from "@/components/home/Gallery";
 import FAQ from "@/components/home/FAQ";
 import CTA from "@/components/home/CTA";
+import QuoteModal from "@/components/QuoteModal";
 
 export const metadata: Metadata = {
   title: "IronClad Movers | Professional Moving Company Seattle WA",
@@ -67,6 +68,11 @@ export default async function HomePage() {
       <ServiceArea />
       <FAQ />
       <CTA />
+
+      {/* Floating "Get Free Quote" button */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <QuoteModal />
+      </div>
     </>
   );
 }
