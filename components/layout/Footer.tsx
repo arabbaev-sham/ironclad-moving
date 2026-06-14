@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import { COMPANY, SERVICE_CITIES } from "@/lib/utils";
+import QRCodeDisplay from "@/components/QRCodeDisplay";
 
 export default function Footer() {
   return (
@@ -88,7 +89,7 @@ export default function Footer() {
           {/* Contact */}
           <div>
             <h3 className="font-display font-semibold text-white mb-4 text-sm tracking-wide uppercase">Contact</h3>
-            <ul className="space-y-3">
+            <ul className="space-y-3 mb-6">
               {[
                 { Icon: Phone, value: COMPANY.phone, href: COMPANY.phoneHref },
                 { Icon: Mail, value: COMPANY.email, href: `mailto:${COMPANY.email}` },
@@ -101,6 +102,7 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+            <QRCodeDisplay />
           </div>
         </div>
 

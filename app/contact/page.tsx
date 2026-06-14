@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Clock, Send, CheckCircle, Loader2 } from "lucide-react";
 import { COMPANY } from "@/lib/utils";
+import QRCodeClient from "@/components/QRCodeClient";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -73,6 +74,11 @@ export default function ContactPage() {
                 </div>
               </div>
             ))}
+
+            {/* QR Code */}
+            <div className="card-dark flex flex-col items-center py-6">
+              <QRCodeClient />
+            </div>
 
             {/* Map */}
             <div className="glass rounded-2xl overflow-hidden h-48 relative">
