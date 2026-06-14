@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone, ChevronDown } from "lucide-react";
@@ -54,13 +55,14 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl bg-gold-gradient flex items-center justify-center shadow-gold-sm group-hover:shadow-gold transition-shadow">
-              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-navy-950" stroke="currentColor" strokeWidth={2.5}>
-                <path d="M1 3h15v13H1zM16 8l4 2v6h-4" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="5.5" cy="18.5" r="2.5" />
-                <circle cx="14.5" cy="18.5" r="2.5" />
-              </svg>
-            </div>
+            <Image
+              src="/logo.png"
+              alt="IronClad Moving logo"
+              width={44}
+              height={44}
+              className="rounded-xl object-contain"
+              priority
+            />
             <div>
               <span className="font-heading font-bold text-lg text-white tracking-tight">IronClad</span>
               <span className="font-heading font-bold text-lg text-gold-400"> Movers</span>

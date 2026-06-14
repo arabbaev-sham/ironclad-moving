@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import { COMPANY, SERVICE_CITIES } from "@/lib/utils";
 
@@ -31,12 +32,13 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <Link href="/" className="flex items-center gap-2 mb-4 group">
-              <div className="w-8 h-8 rounded-xl bg-gold-gradient flex items-center justify-center">
-                <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-navy-950" stroke="currentColor" strokeWidth={2.5}>
-                  <path d="M1 3h15v13H1zM16 8l4 2v6h-4" strokeLinecap="round" strokeLinejoin="round" />
-                  <circle cx="5.5" cy="18.5" r="2.5" /><circle cx="14.5" cy="18.5" r="2.5" />
-                </svg>
-              </div>
+              <Image
+                src="/logo.png"
+                alt="IronClad Moving logo"
+                width={40}
+                height={40}
+                className="rounded-xl object-contain"
+              />
               <div>
                 <span className="font-heading font-bold text-white">IronClad</span>
                 <span className="font-heading font-bold text-gold-400"> Movers</span>
