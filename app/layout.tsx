@@ -5,7 +5,7 @@ import Footer from "@/components/layout/Footer";
 import { COMPANY } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://ironclad-moving.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://ironcladmovingllc.com"),
   title: {
     default: "IronClad Movers | Professional Moving Company Seattle WA",
     template: "%s | IronClad Movers",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://ironclad-moving.vercel.app",
+    url: "https://ironcladmovingllc.com",
     siteName: "IronClad Movers",
     title: "IronClad Movers | Professional Moving Company Seattle WA",
     description: "Seattle's trusted moving company. 500+ happy customers, 4.9★ rating. Serving all of Washington State.",
@@ -58,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 postalCode: "98032",
                 addressCountry: "US",
               },
-              url: "https://ironclad-moving.vercel.app",
+              url: "https://ironcladmovingllc.com",
               openingHours: "Mo-Su 08:00-21:00",
               priceRange: "$$",
               aggregateRating: {
