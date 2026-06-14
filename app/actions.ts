@@ -76,3 +76,69 @@ export async function sendBookingEmail(booking: {
     }
   });
 }
+
+export async function sendQuoteEmail(data: {
+  job_type: string;
+  type_of_job?: string | null;
+  crew_count: string;
+  estimated_time: string;
+  loading_address: string;
+  unloading_address: string;
+  job_date: string;
+  need_truck?: string | null;
+  heavy_items?: string | null;
+  name: string;
+  email: string;
+  phone: string;
+}) {
+  const row = (label: string, value: string | null | undefined) =>
+    value
+      ? `<tr>
+          <td style="padding:7px 0;color:#6b7280;width:150px;vertical-align:top">${label}</td>
+          <td style="padding:7px 0;color:#111;font-weight:500">${value}</td>
+        </tr>`
+      : "";
+
+  const html = `
+    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#f9fafb;padding:32px;border-radius:12px;">
+      <div style="background:#ea580c;padding:20px 24px;border-radius:8px;margin-bottom:24px;">
+        <h1 style="margin:0;color:#fff;font-size:20px;">New Quote Request</h1>
+        <p style="margin:6px 0 0;color:rgba(255,255,255,0.8);font-size:13px;">IronClad Moving</p>
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+        ${row("Job Type", data.job_type)}
+        ${row("Type of Job", data.type_of_job)}
+        ${row("Crew Count", data.crew_count)}
+        ${row("Estimated Time", data.estimated_time)}
+        ${row("Loading Address", data.loading_address)}
+        ${row("Unloading Address", data.unloading_address)}
+        ${row("Date", data.job_date)}
+        ${data.job_type === "Moving Help" ? row("Needs Truck?", data.need_truck) : ""}
+        ${data.job_type === "Moving Help" ? row("Heavy Items?", data.heavy_items) : ""}
+      </table>
+
+      <div style="border-top:1px solid #e5e7eb;padding-top:16px;">
+        <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;">Contact</p>
+        <table style="width:100%;border-collapse:collapse;">
+          ${row("Name", data.name)}
+          ${row("Phone", data.phone)}
+          ${row("Email", data.email)}
+        </table>
+      </div>
+
+      <p style="margin-top:24px;color:#9ca3af;font-size:12px;">IronClad Moving · 2200 W Meeker St, Kent, WA</p>
+    </div>
+  `;
+
+  const result = await resend.emails.send({
+    from: FROM,
+    to: TO,
+    subject: "New Quote Request - IronClad Moving",
+    html,
+  });
+
+  if (result.error) {
+    console.error("[sendQuoteEmail] failed:", result.error);
+  }
+}

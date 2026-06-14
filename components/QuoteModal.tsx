@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { X, CheckCircle, Loader2, ChevronRight } from "lucide-react";
+import { sendQuoteEmail } from "@/app/actions";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -139,6 +140,20 @@ export default function QuoteModal() {
       setStatus("error");
       setErrorMsg(error.message);
     } else {
+      await sendQuoteEmail({
+        job_type: tab,
+        type_of_job: hasJobType ? form.type_of_job : null,
+        crew_count: form.crew_count,
+        estimated_time: form.estimated_time,
+        loading_address: form.loading_address,
+        unloading_address: form.unloading_address,
+        job_date: form.job_date,
+        need_truck: isMoving ? form.need_truck : null,
+        heavy_items: isMoving ? form.heavy_items : null,
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+      });
       setStatus("done");
     }
   };
