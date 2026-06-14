@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { COMPANY } from "@/lib/utils";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://ironcladmovingllc.com"),
@@ -74,6 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
         <main>{children}</main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
