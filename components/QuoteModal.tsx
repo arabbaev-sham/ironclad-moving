@@ -25,8 +25,8 @@ interface FormState {
   name: string;
   email: string;
   phone: string;
-  need_truck: boolean | null;
-  heavy_items: boolean | null;
+  need_truck: "yes" | "no" | null;
+  heavy_items: "yes" | "no" | null;
   type_of_job: string;
 }
 
@@ -58,16 +58,16 @@ function YesNo({
   onChange,
 }: {
   label: string;
-  value: boolean | null;
-  onChange: (v: boolean) => void;
+  value: "yes" | "no" | null;
+  onChange: (v: "yes" | "no") => void;
 }) {
   return (
     <div>
       <p className={labelCls}>{label}</p>
       <div className="flex gap-3">
-        {([true, false] as const).map((v) => (
+        {(["yes", "no"] as const).map((v) => (
           <button
-            key={String(v)}
+            key={v}
             type="button"
             onClick={() => onChange(v)}
             className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors ${
@@ -76,7 +76,7 @@ function YesNo({
                 : "border-gray-200 text-gray-500 hover:border-orange-300"
             }`}
           >
-            {v ? "Yes" : "No"}
+            {v === "yes" ? "Yes" : "No"}
           </button>
         ))}
       </div>
@@ -298,6 +298,7 @@ export default function QuoteModal() {
                         value={form.heavy_items}
                         onChange={(v) => set("heavy_items", v)}
                       />
+
                     </div>
                   )}
 

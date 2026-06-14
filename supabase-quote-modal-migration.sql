@@ -5,8 +5,8 @@
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS job_type       TEXT;
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS type_of_job    TEXT;
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS crew_count     TEXT;
-ALTER TABLE bookings ADD COLUMN IF NOT EXISTS need_truck     BOOLEAN;
-ALTER TABLE bookings ADD COLUMN IF NOT EXISTS heavy_items    BOOLEAN;
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS need_truck     TEXT;
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS heavy_items    TEXT;
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS estimated_time TEXT;
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS loading_address   TEXT;
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS unloading_address TEXT;
