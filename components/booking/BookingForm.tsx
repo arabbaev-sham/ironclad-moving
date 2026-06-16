@@ -5,94 +5,124 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
-import { useDropzone } from "react-dropzone";
-import { Calendar, MapPin, Upload, CheckCircle, Loader2, X } from "lucide-react";
+import { Calendar, CheckCircle, Loader2 } from "lucide-react";
 import { COMPANY } from "@/lib/utils";
 
+type JobTab = "Moving Help" | "Labour Help" | "Commercial Help";
+
 const schema = z.object({
-  name: z.string().min(2, "Name is required"),
-  email: z.string().email("Valid email required"),
-  phone: z.string().min(10, "Valid phone required"),
-  moveType: z.string().min(1, "Select a move type"),
-  moveDate: z.string().min(1, "Select a move date"),
-  pickupAddress: z.string().min(5, "Pickup address required"),
-  pickupFloor: z.string().default("Ground"),
-  destinationAddress: z.string().min(5, "Destination address required"),
-  destinationFloor: z.string().default("Ground"),
-  notes: z.string().optional(),
+  name:               z.string().min(2,  "Name is required"),
+  email:              z.string().email("Valid email required"),
+  phone:              z.string().min(10, "Valid phone required"),
+  job_type:           z.string().min(1),
+  crew_count:         z.string().min(1,  "Select crew count"),
+  estimated_time:     z.string().min(1,  "Select estimated time"),
+  loading_address:    z.string().min(5,  "Loading address required"),
+  unloading_address:  z.string().min(5,  "Unloading address required"),
+  job_date:           z.string().min(1,  "Select a date"),
+  type_of_job:        z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
 
-const MOVE_TYPES = [
-  "Local Move (within Seattle)",
-  "Long Distance (within WA)",
-  "Apartment Move",
-  "Office / Commercial Move",
-  "Packing Services Only",
-  "Furniture Assembly Only",
-  "Storage Move",
-];
+const STEPS: string[]       = ["Details", "Job Details", "Review"];
+const TABS: JobTab[]        = ["Moving Help", "Labour Help", "Commercial Help"];
+const CREW_OPTIONS: string[]= ["2 crew", "3 crew", "4 crew", "5+ crew"];
+const TIME_OPTIONS: string[]= ["1–2 hours", "2–4 hours", "4–6 hours", "6–8 hours", "Full day (8+ hrs)"];
 
-const FLOORS = [
-  "Ground / 1st Floor",
-  "2nd Floor",
-  "3rd Floor",
-  "4th Floor",
-  "5th+ Floor",
-  "Elevator Access",
-];
-
-const STEPS = ["Details", "Addresses", "Files", "Review"];
+function YesNo({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: "yes" | "no" | null;
+  onChange: (v: "yes" | "no") => void;
+}) {
+  return (
+    <div>
+      <label className="label-dark">{label}</label>
+      <div className="flex gap-3 mt-1">
+        {(["yes", "no"] as const).map((v) => (
+          <button
+            key={v}
+            type="button"
+            onClick={() => onChange(v)}
+            className={`flex-1 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
+              value === v
+                ? "bg-emerald-500 border-emerald-500 text-white"
+                : "border-white/10 text-gray-400 hover:border-emerald-500/40 bg-white/5"
+            }`}
+          >
+            {v === "yes" ? "Yes" : "No"}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function BookingForm({ defaults }: { defaults?: Partial<FormData> }) {
-  const [step, setStep] = useState(0);
-  const [photos, setPhotos] = useState<File[]>([]);
+  const [step, setStep]           = useState(0);
+  const [tab, setTab]             = useState<JobTab>("Moving Help");
+  const [needTruck, setNeedTruck] = useState<"yes" | "no" | null>(null);
+  const [heavyItems, setHeavyItems] = useState<"yes" | "no" | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [loading, setLoading]     = useState(false);
+  const [error, setError]         = useState("");
 
-  const { register, handleSubmit, formState: { errors }, watch, trigger } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    trigger,
+    setValue,
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      moveType: defaults?.moveType || "",
-      moveDate: defaults?.moveDate || "",
-      pickupAddress: defaults?.pickupAddress || "",
-      destinationAddress: defaults?.destinationAddress || "",
-      pickupFloor: "Ground / 1st Floor",
-      destinationFloor: "Ground / 1st Floor",
+      job_type:          "Moving Help",
+      loading_address:   defaults?.loading_address   || "",
+      unloading_address: defaults?.unloading_address || "",
+      job_date:          defaults?.job_date           || "",
     },
   });
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: { "image/*": [] },
-    maxFiles: 10,
-    maxSize: 5 * 1024 * 1024,
-    onDrop: (accepted) => setPhotos((p) => [...p, ...accepted].slice(0, 10)),
-  });
+  const handleTabChange = (t: JobTab) => {
+    setTab(t);
+    setValue("job_type", t);
+    setNeedTruck(null);
+    setHeavyItems(null);
+    setValue("type_of_job", "");
+  };
 
   const nextStep = async () => {
     const fields: Record<number, (keyof FormData)[]> = {
-      0: ["name", "email", "phone", "moveType", "moveDate"],
-      1: ["pickupAddress", "pickupFloor", "destinationAddress", "destinationFloor"],
+      0: ["name", "email", "phone"],
+      1: ["crew_count", "estimated_time", "loading_address", "unloading_address", "job_date"],
     };
     if (fields[step]) {
       const valid = await trigger(fields[step]);
       if (!valid) return;
     }
-    setStep((s) => Math.min(s + 1, 3));
+    setStep((s) => Math.min(s + 1, 2));
   };
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     setError("");
     try {
-      const formData = new FormData();
-      Object.entries(data).forEach(([k, v]) => formData.append(k, v || ""));
-      photos.forEach((f) => formData.append("photos", f));
+      const fd = new FormData();
+      Object.entries(data).forEach(([k, v]) => {
+        if (v !== undefined && v !== null) fd.append(k, String(v));
+      });
+      if (tab === "Moving Help") {
+        fd.append("need_truck",  needTruck  || "");
+        fd.append("heavy_items", heavyItems || "");
+      }
 
-      const res = await fetch("/api/bookings", { method: "POST", body: formData });
-      if (!res.ok) throw new Error("Submission failed");
+      const res = await fetch("/api/bookings", { method: "POST", body: fd });
+      if (!res.ok) throw new Error();
       setSubmitted(true);
     } catch {
       setError("Something went wrong. Please call us at " + COMPANY.phone);
@@ -101,6 +131,7 @@ export default function BookingForm({ defaults }: { defaults?: Partial<FormData>
     }
   };
 
+  /* ── Success screen ── */
   if (submitted) {
     return (
       <motion.div
@@ -108,7 +139,6 @@ export default function BookingForm({ defaults }: { defaults?: Partial<FormData>
         animate={{ opacity: 1, scale: 1 }}
         className="text-center py-12"
       >
-        {/* Animated checkmark */}
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -121,17 +151,15 @@ export default function BookingForm({ defaults }: { defaults?: Partial<FormData>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-4 py-1.5 mb-4">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-emerald-400 text-sm font-medium">Booking Submitted Successfully</span>
+            <span className="text-emerald-400 text-sm font-medium">Request Submitted Successfully</span>
           </div>
 
-          <h2 className="text-3xl font-heading font-bold text-white mb-3">
-            You&apos;re All Set!
-          </h2>
+          <h2 className="text-3xl font-heading font-bold text-white mb-3">You&apos;re All Set!</h2>
           <p className="text-gray-400 max-w-md mx-auto mb-2">
-            Your booking request has been received. We&apos;ll confirm and send a price estimate to your email within <strong className="text-white">1 hour</strong>.
+            We&apos;ll review your request and send a confirmation to your email within <strong className="text-white">1 hour</strong>.
           </p>
           <p className="text-gray-500 text-sm max-w-sm mx-auto mb-8">
-            Questions? Call us anytime at{" "}
+            Questions? Call us at{" "}
             <a href={COMPANY.phoneHref} className="text-emerald-400 hover:underline font-medium">{COMPANY.phone}</a>
           </p>
 
@@ -149,36 +177,28 @@ export default function BookingForm({ defaults }: { defaults?: Partial<FormData>
           </div>
 
           <button
-            onClick={() => { setSubmitted(false); setStep(0); }}
+            onClick={() => { setSubmitted(false); setStep(0); setTab("Moving Help"); setNeedTruck(null); setHeavyItems(null); }}
             className="btn-outline-emerald"
           >
-            Book Another Move
+            Submit Another Request
           </button>
         </motion.div>
       </motion.div>
     );
   }
 
+  /* ── Progress bar ── */
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Progress */}
       <div className="flex items-center gap-2 mb-8">
         {STEPS.map((s, i) => (
           <div key={s} className="flex items-center flex-1">
-            <div
-              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                i <= step ? "text-emerald-400" : "text-gray-500"
-              }`}
-            >
-              <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                  i < step
-                    ? "bg-emerald-500 text-white"
-                    : i === step
-                    ? "bg-emerald-500/20 border-2 border-emerald-500 text-emerald-400"
-                    : "bg-white/5 border border-white/10 text-gray-500"
-                }`}
-              >
+            <div className={`flex items-center gap-2 text-sm font-medium transition-colors ${i <= step ? "text-emerald-400" : "text-gray-500"}`}>
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                i < step  ? "bg-emerald-500 text-white"
+                : i === step ? "bg-emerald-500/20 border-2 border-emerald-500 text-emerald-400"
+                : "bg-white/5 border border-white/10 text-gray-500"
+              }`}>
                 {i < step ? "✓" : i + 1}
               </div>
               <span className="hidden sm:block">{s}</span>
@@ -191,14 +211,11 @@ export default function BookingForm({ defaults }: { defaults?: Partial<FormData>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* Step 0: Personal Details */}
+        {/* ── Step 0: Contact Details ── */}
         {step === 0 && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
-          >
-            <h2 className="text-xl font-heading font-semibold text-white mb-5">Your Details</h2>
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
+            <h2 className="text-xl font-heading font-semibold text-white mb-5">Your Contact Info</h2>
+
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label className="label-dark">Full Name</label>
@@ -211,168 +228,136 @@ export default function BookingForm({ defaults }: { defaults?: Partial<FormData>
                 {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone.message}</p>}
               </div>
             </div>
+
             <div>
               <label className="label-dark">Email Address</label>
               <input {...register("email")} type="email" className="input-dark" placeholder="jane@example.com" />
               {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>}
             </div>
+          </motion.div>
+        )}
+
+        {/* ── Step 1: Job Details ── */}
+        {step === 1 && (
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-5">
+            <h2 className="text-xl font-heading font-semibold text-white mb-2">Job Details</h2>
+
+            {/* Tabs */}
+            <div className="flex border-b border-white/10">
+              {TABS.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => handleTabChange(t)}
+                  className={`py-3 mr-5 text-xs font-semibold border-b-2 transition-colors whitespace-nowrap ${
+                    tab === t
+                      ? "border-emerald-500 text-emerald-400"
+                      : "border-transparent text-gray-500 hover:text-gray-300"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+
+            {/* Common fields */}
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label className="label-dark">Move Type</label>
-                <select {...register("moveType")} className="input-dark cursor-pointer">
-                  <option value="" disabled>Select type...</option>
-                  {MOVE_TYPES.map((t) => (
-                    <option key={t} value={t} className="bg-dark">{t}</option>
-                  ))}
+                <label className="label-dark">Crew Count</label>
+                <select {...register("crew_count")} className="input-dark cursor-pointer">
+                  <option value="">Select...</option>
+                  {CREW_OPTIONS.map((o) => <option key={o} value={o} className="bg-dark">{o}</option>)}
                 </select>
-                {errors.moveType && <p className="text-red-400 text-xs mt-1">{errors.moveType.message}</p>}
+                {errors.crew_count && <p className="text-red-400 text-xs mt-1">{errors.crew_count.message}</p>}
               </div>
               <div>
-                <label className="label-dark">Preferred Move Date</label>
-                <input
-                  {...register("moveDate")}
-                  type="date"
-                  className="input-dark cursor-pointer"
-                  min={new Date().toISOString().split("T")[0]}
-                />
-                {errors.moveDate && <p className="text-red-400 text-xs mt-1">{errors.moveDate.message}</p>}
+                <label className="label-dark">Estimated Time</label>
+                <select {...register("estimated_time")} className="input-dark cursor-pointer">
+                  <option value="">Select...</option>
+                  {TIME_OPTIONS.map((o) => <option key={o} value={o} className="bg-dark">{o}</option>)}
+                </select>
+                {errors.estimated_time && <p className="text-red-400 text-xs mt-1">{errors.estimated_time.message}</p>}
               </div>
             </div>
-          </motion.div>
-        )}
 
-        {/* Step 1: Addresses */}
-        {step === 1 && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
-          >
-            <h2 className="text-xl font-heading font-semibold text-white mb-5">Move Addresses</h2>
-            <div className="p-4 glass rounded-xl border-l-2 border-emerald-500">
-              <div className="flex items-center gap-2 text-emerald-400 mb-3 text-sm font-medium">
-                <MapPin className="w-4 h-4" /> Pickup Location
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <label className="label-dark">Pickup Address</label>
-                  <input {...register("pickupAddress")} className="input-dark" placeholder="123 Main St, Seattle, WA 98101" />
-                  {errors.pickupAddress && <p className="text-red-400 text-xs mt-1">{errors.pickupAddress.message}</p>}
-                </div>
-                <div>
-                  <label className="label-dark">Floor / Elevator</label>
-                  <select {...register("pickupFloor")} className="input-dark cursor-pointer">
-                    {FLOORS.map((f) => <option key={f} value={f} className="bg-dark">{f}</option>)}
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div className="p-4 glass rounded-xl border-l-2 border-white/20">
-              <div className="flex items-center gap-2 text-white mb-3 text-sm font-medium">
-                <MapPin className="w-4 h-4" /> Destination
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <label className="label-dark">Destination Address</label>
-                  <input {...register("destinationAddress")} className="input-dark" placeholder="456 Oak Ave, Bellevue, WA 98004" />
-                  {errors.destinationAddress && <p className="text-red-400 text-xs mt-1">{errors.destinationAddress.message}</p>}
-                </div>
-                <div>
-                  <label className="label-dark">Floor / Elevator</label>
-                  <select {...register("destinationFloor")} className="input-dark cursor-pointer">
-                    {FLOORS.map((f) => <option key={f} value={f} className="bg-dark">{f}</option>)}
-                  </select>
-                </div>
-              </div>
-            </div>
             <div>
-              <label className="label-dark">Special Instructions (optional)</label>
-              <textarea {...register("notes")} className="input-dark min-h-[80px] resize-none" placeholder="Fragile items, parking info, special requirements..." />
+              <label className="label-dark">Loading Address</label>
+              <input {...register("loading_address")} className="input-dark" placeholder="123 Main St, Seattle, WA" />
+              {errors.loading_address && <p className="text-red-400 text-xs mt-1">{errors.loading_address.message}</p>}
             </div>
-          </motion.div>
-        )}
 
-        {/* Step 2: Photo Upload */}
-        {step === 2 && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
-          >
-            <h2 className="text-xl font-heading font-semibold text-white mb-2">Upload Photos</h2>
-            <p className="text-gray-400 text-sm mb-5">
-              Optional: Upload photos of your items to help us provide a more accurate quote.
-            </p>
-            <div
-              {...getRootProps()}
-              className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
-                isDragActive ? "border-emerald-400 bg-emerald-500/10" : "border-white/20 hover:border-emerald-500/40 hover:bg-white/5"
-              }`}
-            >
-              <input {...getInputProps()} />
-              <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
-              <p className="text-white font-medium mb-1">
-                {isDragActive ? "Drop photos here..." : "Drag & drop photos here"}
-              </p>
-              <p className="text-gray-500 text-sm">or click to browse · Max 10 photos · 5MB each</p>
+            <div>
+              <label className="label-dark">Unloading Address</label>
+              <input {...register("unloading_address")} className="input-dark" placeholder="456 Oak Ave, Bellevue, WA" />
+              {errors.unloading_address && <p className="text-red-400 text-xs mt-1">{errors.unloading_address.message}</p>}
             </div>
-            {photos.length > 0 && (
-              <div className="grid grid-cols-3 gap-2">
-                {photos.map((f, i) => (
-                  <div key={i} className="relative rounded-xl overflow-hidden aspect-square bg-dark-200">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={URL.createObjectURL(f)}
-                      alt={`Upload ${i + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setPhotos((p) => p.filter((_, j) => j !== i))}
-                      className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center cursor-pointer hover:bg-red-500 transition-colors"
-                      aria-label="Remove photo"
-                    >
-                      <X className="w-3.5 h-3.5 text-white" />
-                    </button>
-                  </div>
-                ))}
+
+            <div>
+              <label className="label-dark">Preferred Date</label>
+              <input
+                {...register("job_date")}
+                type="date"
+                className="input-dark cursor-pointer"
+                min={new Date().toISOString().split("T")[0]}
+              />
+              {errors.job_date && <p className="text-red-400 text-xs mt-1">{errors.job_date.message}</p>}
+            </div>
+
+            {/* Moving-only */}
+            {tab === "Moving Help" && (
+              <div className="space-y-4 pt-1">
+                <YesNo label="Do you need a truck?" value={needTruck} onChange={setNeedTruck} />
+                <YesNo label="Any heavy items? (piano, safe, etc.)" value={heavyItems} onChange={setHeavyItems} />
               </div>
             )}
-            <p className="text-gray-500 text-xs">
-              You can skip this step — photos are optional.
-            </p>
+
+            {/* Labour / Commercial */}
+            {(tab === "Labour Help" || tab === "Commercial Help") && (
+              <div>
+                <label className="label-dark">What type of job?</label>
+                <input
+                  {...register("type_of_job")}
+                  className="input-dark"
+                  placeholder={
+                    tab === "Labour Help"
+                      ? "e.g. furniture assembly, loading help..."
+                      : "e.g. office relocation, warehouse move..."
+                  }
+                />
+              </div>
+            )}
           </motion.div>
         )}
 
-        {/* Step 3: Review */}
-        {step === 3 && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
-          >
-            <h2 className="text-xl font-heading font-semibold text-white mb-5">Review Your Booking</h2>
+        {/* ── Step 2: Review ── */}
+        {step === 2 && (
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
+            <h2 className="text-xl font-heading font-semibold text-white mb-5">Review Your Request</h2>
+
             <div className="glass rounded-2xl p-5 space-y-3 text-sm">
               {[
-                { label: "Move Type", value: watch("moveType") },
-                { label: "Move Date", value: watch("moveDate") },
-                { label: "Name", value: watch("name") },
-                { label: "Email", value: watch("email") },
-                { label: "Phone", value: watch("phone") },
-                { label: "From", value: `${watch("pickupAddress")} (${watch("pickupFloor")})` },
-                { label: "To", value: `${watch("destinationAddress")} (${watch("destinationFloor")})` },
+                { label: "Job Type",          value: tab },
+                { label: "Name",              value: watch("name") },
+                { label: "Email",             value: watch("email") },
+                { label: "Phone",             value: watch("phone") },
+                { label: "Crew Count",        value: watch("crew_count") },
+                { label: "Estimated Time",    value: watch("estimated_time") },
+                { label: "From",              value: watch("loading_address") },
+                { label: "To",                value: watch("unloading_address") },
+                { label: "Date",              value: watch("job_date") },
+                ...(tab === "Moving Help" ? [
+                  { label: "Needs Truck",     value: needTruck || "—" },
+                  { label: "Heavy Items",     value: heavyItems || "—" },
+                ] : []),
+                ...(tab !== "Moving Help" && watch("type_of_job") ? [
+                  { label: "Type of Job",     value: watch("type_of_job") || "" },
+                ] : []),
               ].map(({ label, value }) => (
                 <div key={label} className="flex gap-3">
-                  <span className="text-gray-500 w-24 shrink-0">{label}</span>
+                  <span className="text-gray-500 w-32 shrink-0">{label}</span>
                   <span className="text-white">{value || "—"}</span>
                 </div>
               ))}
-              {photos.length > 0 && (
-                <div className="flex gap-3">
-                  <span className="text-gray-500 w-24 shrink-0">Photos</span>
-                  <span className="text-white">{photos.length} photo(s) uploaded</span>
-                </div>
-              )}
             </div>
 
             {error && (
@@ -388,23 +373,27 @@ export default function BookingForm({ defaults }: { defaults?: Partial<FormData>
           </motion.div>
         )}
 
-        {/* Navigation */}
+        {/* ── Navigation ── */}
         <div className="flex gap-3 mt-8">
           {step > 0 && (
-            <button type="button" onClick={() => setStep(s => s - 1)} className="btn-secondary flex-1">
+            <button type="button" onClick={() => setStep((s) => s - 1)} className="btn-secondary flex-1">
               Back
             </button>
           )}
-          {step < 3 ? (
+          {step < 2 ? (
             <button type="button" onClick={nextStep} className="btn-primary flex-1 justify-center">
-              {step === 2 ? "Review Booking" : "Continue"}
+              Continue
             </button>
           ) : (
-            <button type="submit" disabled={loading} className="btn-primary flex-1 justify-center disabled:opacity-60 disabled:cursor-not-allowed">
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary flex-1 justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+            >
               {loading ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</>
               ) : (
-                <><Calendar className="w-4 h-4" /> Confirm Booking</>
+                <><Calendar className="w-4 h-4" /> Submit Request</>
               )}
             </button>
           )}

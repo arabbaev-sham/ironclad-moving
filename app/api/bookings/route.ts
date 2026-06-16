@@ -6,26 +6,35 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
 
+    const str = (key: string) => String(formData.get(key) || "");
+
     const booking = {
-      name: String(formData.get("name") || ""),
-      email: String(formData.get("email") || ""),
-      phone: String(formData.get("phone") || ""),
-      move_type: String(formData.get("moveType") || ""),
-      move_date: String(formData.get("moveDate") || ""),
-      pickup_address: String(formData.get("pickupAddress") || ""),
-      pickup_floor: String(formData.get("pickupFloor") || "Ground"),
-      destination_address: String(formData.get("destinationAddress") || ""),
-      destination_floor: String(formData.get("destinationFloor") || "Ground"),
-      notes: String(formData.get("notes") || ""),
-      status: "pending" as const,
-      photo_urls: [] as string[],
+      // contact
+      name:               str("name"),
+      email:              str("email"),
+      phone:              str("phone"),
+      // job
+      job_type:           str("job_type"),
+      type_of_job:        str("type_of_job") || null,
+      crew_count:         str("crew_count"),
+      estimated_time:     str("estimated_time"),
+      loading_address:    str("loading_address"),
+      unloading_address:  str("unloading_address"),
+      job_date:           str("job_date"),
+      need_truck:         str("need_truck")  || null,
+      heavy_items:        str("heavy_items") || null,
+      // legacy columns (keep NOT NULL satisfied)
+      move_type:          str("job_type"),
+      move_date:          str("job_date"),
+      pickup_address:     str("loading_address"),
+      destination_address: str("unloading_address"),
+      status:             "pending" as const,
+      photo_urls:         [] as string[],
     };
 
-    if (!booking.name || !booking.email || !booking.phone || !booking.move_type) {
+    if (!booking.name || !booking.email || !booking.phone || !booking.job_type) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
-
-    console.log("[bookings] Inserting booking for:", booking.name);
 
     const { data, error } = await supabaseAdmin
       .from("bookings")
@@ -34,15 +43,11 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (error) {
-      console.error("[bookings] Supabase insert error:", JSON.stringify(error));
-      return NextResponse.json(
-        { error: "Failed to save booking", details: error.message, code: error.code },
-        { status: 500 }
-      );
+      console.error("[bookings] Supabase error:", JSON.stringify(error));
+      return NextResponse.json({ error: "Failed to save booking", details: error.message }, { status: 500 });
     }
 
-    console.log("[bookings] Saved successfully, id:", data.id);
-
+    console.log("[bookings] Saved id:", data.id);
     await sendBookingEmail(booking);
 
     return NextResponse.json({ success: true, id: data.id });
