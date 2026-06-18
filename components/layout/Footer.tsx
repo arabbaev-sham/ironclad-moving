@@ -42,7 +42,7 @@ export default function Footer() {
               />
               <div>
                 <span className="font-heading font-bold text-white">IronClad</span>
-                <span className="font-heading font-bold text-gold-400"> Movers</span>
+                <span className="font-heading font-bold text-gold-400"> Moving</span>
                 <div className="text-[9px] text-text-muted tracking-widest -mt-0.5 uppercase">Est. 2024</div>
               </div>
             </Link>
@@ -123,7 +123,7 @@ export default function Footer() {
       {/* Bottom */}
       <div className="border-t border-white/5 py-5 px-4">
         <div className="container-max flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-text-muted">
-          <p>© {new Date().getFullYear()} IronClad Movers. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} IronClad Moving. All rights reserved.</p>
           <div className="flex gap-4">
             <Link href="/privacy" className="hover:text-white transition-colors cursor-pointer">Privacy</Link>
             <Link href="/terms" className="hover:text-white transition-colors cursor-pointer">Terms</Link>

@@ -9,24 +9,24 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://ironcladmovingllc.com"),
   title: {
-    default: "IronClad Movers | Professional Moving Company Seattle WA",
-    template: "%s | IronClad Movers",
+    default: "IronClad Moving | Professional Moving Company Seattle WA",
+    template: "%s | IronClad Moving",
   },
   description:
-    "IronClad Movers — Seattle's trusted moving company since 2024. Licensed & insured. Local, long-distance, apartment, and office moving services. Get a free quote today! Call 206-609-5878.",
-  keywords: ["Seattle movers", "IronClad Movers", "moving company Seattle", "Seattle moving services", "local movers Seattle WA"],
+    "IronClad Moving — Seattle's trusted moving company since 2024. Licensed & insured. Local, long-distance, apartment, and office moving services. Get a free quote today! Call 206-609-5878.",
+  keywords: ["Seattle movers", "IronClad Moving", "moving company Seattle", "Seattle moving services", "local movers Seattle WA"],
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://ironcladmovingllc.com",
-    siteName: "IronClad Movers",
-    title: "IronClad Movers | Professional Moving Company Seattle WA",
+    siteName: "IronClad Moving",
+    title: "IronClad Moving | Professional Moving Company Seattle WA",
     description: "Seattle's trusted moving company. 500+ happy customers, 4.9★ rating. Serving all of Washington State.",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "IronClad Movers" }],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "IronClad Moving" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "IronClad Movers | Seattle Moving Company",
+    title: "IronClad Moving | Seattle Moving Company",
     description: "500+ happy customers. 4.9★ Google rating. Licensed & insured. Get a free quote!",
   },
   robots: { index: true, follow: true },
@@ -76,8 +76,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
         <main>{children}</main>
         <Footer />
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

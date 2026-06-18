@@ -65,7 +65,7 @@ export default function Navbar() {
             />
             <div>
               <span className="font-heading font-bold text-lg text-white tracking-tight">IronClad</span>
-              <span className="font-heading font-bold text-lg text-gold-400"> Movers</span>
+              <span className="font-heading font-bold text-lg text-gold-400"> Moving</span>
               <div className="text-[9px] text-text-muted tracking-[0.2em] -mt-0.5 font-sans uppercase">Seattle · Est. 2024</div>
             </div>
           </Link>
